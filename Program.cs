@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
-namespace Waterbill 
+namespace CalculateWaterBill
 {
     internal class Program
     {
@@ -20,17 +16,18 @@ namespace Waterbill
 
         static string CustomerChoice()
         {
-            Console.WriteLine("\nEnter your choice:");
+            Console.WriteLine("\nEnter your choice: ");
             string choice = Console.ReadLine();
 
             while (choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "5")
             {
-                Console.WriteLine("Error! Please re-enter: ");
+                Console.WriteLine("Please enter the number: ");
                 choice = Console.ReadLine();
             }
 
             return choice;
         }
+
         static void Main(string[] args)
         {
             while (true)
@@ -44,9 +41,30 @@ namespace Waterbill
                 }
 
                 double waterUsage = GetWaterUsage();
-                CalculateBill(choice, waterUsage);
+                if (choice == "1")
+                {
+                    int numPeople = GetNumPeopleInHousehold();
+                    Console.Clear(); 
+                    CalculateHouseholdBill(waterUsage, numPeople);
+                }
+                else
+                {
+                    Console.Clear(); 
+                    CalculateBill(choice, waterUsage);
+                }
+
+               
+                Console.WriteLine("\nDo you want to continue? (yes/no): ");
+                string continueChoice = Console.ReadLine();
+                if (continueChoice.ToLower() != "yes")
+                {
+                    break;
+                }
+
+                Console.Clear(); 
             }
         }
+
         static double GetWaterUsage()
         {
             Console.Write("\nName customer: ");
@@ -57,14 +75,14 @@ namespace Waterbill
             Console.Write("\nWater meter reading last month: ");
             while (!double.TryParse(Console.ReadLine(), out lastMonth))
             {
-                Console.WriteLine("Error. Please re-enter.");
+                Console.WriteLine("Please enter the number .");
                 Console.Write("\nWater meter reading last month: ");
             }
 
             Console.Write("\nWater meter reading this month: ");
             while (!double.TryParse(Console.ReadLine(), out thisMonth) || lastMonth > thisMonth)
             {
-                Console.WriteLine("Error. Please re-enter.");
+                Console.WriteLine("This month can not smaller last month.");
                 Console.Write("\nWater meter reading this month: ");
             }
 
@@ -73,12 +91,25 @@ namespace Waterbill
 
             return waterUsage;
         }
+
+        static int GetNumPeopleInHousehold()
+        {
+            Console.Write("How many people in your family: ");
+            int numPeople;
+            while (!int.TryParse(Console.ReadLine(), out numPeople))
+            {
+                Console.WriteLine("Please enter the number.");
+                Console.Write("How many people in your family: ");
+            }
+
+            return numPeople;
+        }
+
         static void CalculateBill(string choice, double waterUsage)
         {
             switch (choice)
             {
-                case "1":
-                    CalculateHouseholdBill(waterUsage);
+                case "1":                   
                     break;
                 case "2":
                     CalculateBillForType(waterUsage, 9.955);
@@ -91,16 +122,9 @@ namespace Waterbill
                     break;
             }
         }
-        static void CalculateHouseholdBill(double waterUsage)
-        {
-            Console.Write("How many people in your family: ");
-            int numPeople;
-            while (!int.TryParse(Console.ReadLine(), out numPeople))
-            {
-                Console.WriteLine("Error. Please re-enter.");
-                Console.Write("How many people in the household: ");
-            }
 
+        static void CalculateHouseholdBill(double waterUsage, int numPeople)
+        {
             double waterPerPerson = waterUsage / numPeople;
             double totalCost = 0;
             double remainingWater = waterPerPerson;
@@ -152,7 +176,6 @@ namespace Waterbill
             Console.WriteLine($"Cost before tax: {totalBeforeTax.ToString("#,#.000")} VND");
             Console.WriteLine($"Cost after VAT: {totalAfterVAT.ToString("#,#.000")} VND");
             Console.WriteLine($"Total after environmental tax: {finalTotal.ToString("#,#.000")} VND");
-        
         }
     }
 }
